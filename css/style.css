@@ -1,0 +1,61 @@
+body {
+    margin: 0;
+}
+
+header {
+    padding: 8px;
+    color: rgb(240, 235, 235);
+    text-align: center;
+    background: rgb(36, 34, 34);
+}
+
+.sidenav {
+    height: 100%;
+    width: 0%;
+    position: fixed;
+    z-index: 1; 
+    top: 0;
+    left: 0;
+    background-color: #111;
+    overflow-x: hidden;
+    padding-top: 15%;
+    transition: 0.3s;
+}
+
+.sidenav a {
+    padding: 8px 8px 8px 350px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #818181;
+    display: block;
+    transition: 0.3s;
+}
+
+.sidenav a:hover {
+    color: #f1f1f1;
+}
+
+.openMenuBtn {
+    width: 3px;
+    height: 3px;
+    color: grey;
+    transition: 0.4s;
+}
+
+.openMenuBtn:hover {
+    color: black;
+}
+
+.sidenav .closeMenuBtn {
+    position: absolute;
+    top: 35%;
+    right: 20px;
+    font-size: 60px;
+    padding-left: 20px;
+}
+
+.map {
+    position: relative;
+    margin-top: 40px;
+    margin-left: 30%;
+}
