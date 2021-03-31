@@ -25,3 +25,4 @@ node_modules/
 # ignore workspace files
 .DS_Store
 .idea
+.idea/*
