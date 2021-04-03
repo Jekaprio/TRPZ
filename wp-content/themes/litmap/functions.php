@@ -140,16 +140,37 @@ add_action( 'widgets_init', 'litmap_widgets_init' );
  * Enqueue scripts and styles.
  */
 function litmap_scripts() {
-	wp_enqueue_style( 'litmap-style', get_stylesheet_uri(), array(), _S_VERSION );
-	wp_style_add_data( 'litmap-style', 'rtl', 'replace' );
+	wp_enqueue_style( 'litmap-style', get_stylesheet_uri(), array(), filemtime( get_stylesheet_directory() . '/style.css' ) );
 
 	wp_enqueue_script( 'litmap-navigation', get_template_directory_uri() . '/js/navigation.js', array(), _S_VERSION, true );
 
-	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
-		wp_enqueue_script( 'comment-reply' );
-	}
+	// отменяем зарегистрированный jQuery
+	wp_deregister_script('jquery-core');
+	wp_deregister_script('jquery');
+
+	// регистрируем
+	wp_register_script( 'jquery-core', 'https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js', false, null, true );
+	wp_register_script( 'jquery', false, array('jquery-core'), null, true );
+
+	// подключаем
+	wp_enqueue_script( 'jquery' );
+
+	wp_enqueue_script('spiderfier', 'https://cdnjs.cloudflare.com/ajax/libs/OverlappingMarkerSpiderfier/1.0.3/oms.min.js', array(), false, true);
+	wp_enqueue_script('clusterer', 'https://cdnjs.cloudflare.com/ajax/libs/markerclustererplus/2.1.4/markerclusterer.min.js', array(), false, true);
+//	wp_enqueue_style( 'map-style', get_template_directory_uri().'/styles/map-style.css', array(), filemtime( get_stylesheet_directory() . '/styles/map-style.css' ));
+	wp_enqueue_script('gmaps-api', 'https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyBC9JGXsYy9CK7jzgNAEDmcdmTsVl1ntmY', array(), time(), true);
+	wp_enqueue_script('core', get_template_directory_uri() . '/js/core.js', array('jquery'), time(), true);
 }
 add_action( 'wp_enqueue_scripts', 'litmap_scripts' );
+
+function wp_ajax_data(){
+	wp_localize_script( 'core', 'wp_ajax_data',
+		array(
+			'url' => admin_url('admin-ajax.php')
+		)
+	);
+}
+add_action( 'wp_enqueue_scripts', 'wp_ajax_data', 99 );
 
 /**
  * Implement the Custom Header feature.
@@ -202,3 +223,69 @@ add_action( 'wp_dashboard_setup', 'remove_draft_widget', 999 );
 function remove_draft_widget(){
 	remove_meta_box( 'dashboard_quick_press', 'dashboard', 'side' );
 }
+
+/**
+ * Remove default menus
+ */
+function remove_default_menus() {
+	remove_menu_page( 'edit.php' );                   //Posts
+	remove_menu_page( 'edit-comments.php' );          //Comments
+}
+add_action('admin_menu','remove_default_menus');
+
+function my_acf_google_map_api( $api ){
+	$api['key'] = 'AIzaSyBC9JGXsYy9CK7jzgNAEDmcdmTsVl1ntmY';
+	return $api;
+}
+add_filter('acf/fields/google_map/api', 'my_acf_google_map_api');
+
+function cache_items( $post_id ) {
+
+	// Если это ревизия, то не отправляем письмо
+	if ( wp_is_post_revision( $post_id ) ){
+		return;
+	}
+
+	// Если статус записи отличается от "Опубликовано", то не отправляем письмо
+	if ( get_post($post_id)->post_status != 'publish' ){
+		return;
+	}
+
+	$cached_items = [];
+
+	$items = get_posts([
+		'post_type' => 'item'
+	]);
+
+	error_log(print_r($items, 1));
+
+	foreach ($items as $item) {
+		$meta = get_fields($item->ID);
+		$categories = wp_get_post_terms($item->ID, 'item_category');
+
+		if (!empty($meta['pointer']) && !empty($categories) && !is_wp_error($categories)) {
+			$cached_items[] = [
+				'id' => $item->ID,
+				'category' => $categories[0]->slug,
+				'coordinates' => [
+					'lat' => $meta['pointer']['lat'],
+					'lng' => $meta['pointer']['lng'],
+				]
+			];
+		}
+		error_log(print_r($meta, 1));
+		error_log(print_r($categories, 1));
+	}
+
+	error_log(print_r($cached_items, 1));
+
+	update_option('items', $cached_items, false);
+}
+add_action( 'save_post_item', 'cache_items' );
+
+function get_pointers() {
+	$pointers = get_option('items');
+	wp_send_json_success(['items' => json_encode($pointers)]);
+}
+add_action( 'wp_ajax_get_pointers', 'get_pointers' );
+add_action( 'wp_ajax_nopriv_get_pointers', 'get_pointers' );
