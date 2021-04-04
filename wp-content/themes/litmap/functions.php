@@ -140,7 +140,9 @@ add_action( 'widgets_init', 'litmap_widgets_init' );
  * Enqueue scripts and styles.
  */
 function litmap_scripts() {
+	wp_enqueue_style( 'wpb-google-fonts', 'https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap', false );
 	wp_enqueue_style( 'litmap-style', get_stylesheet_uri(), array(), filemtime( get_stylesheet_directory() . '/style.css' ) );
+	wp_enqueue_style( 'main-style', get_template_directory_uri().'/styles/main.css', array(), filemtime( get_stylesheet_directory() . '/styles/main.css' ));
 
 	wp_enqueue_script( 'litmap-navigation', get_template_directory_uri() . '/js/navigation.js', array(), _S_VERSION, true );
 
@@ -241,16 +243,6 @@ add_filter('acf/fields/google_map/api', 'my_acf_google_map_api');
 
 function cache_items( $post_id ) {
 
-	// Если это ревизия, то не отправляем письмо
-	if ( wp_is_post_revision( $post_id ) ){
-		return;
-	}
-
-	// Если статус записи отличается от "Опубликовано", то не отправляем письмо
-	if ( get_post($post_id)->post_status != 'publish' ){
-		return;
-	}
-
 	$cached_items = [];
 
 	$items = get_posts([
@@ -281,7 +273,8 @@ function cache_items( $post_id ) {
 
 	update_option('items', $cached_items, false);
 }
-add_action( 'save_post_item', 'cache_items' );
+add_action('acf/save_post', 'cache_items');
+add_action('trashed_post', 'cache_items');
 
 function get_pointers() {
 	$pointers = get_option('items');

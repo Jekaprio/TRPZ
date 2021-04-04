@@ -1,3 +1,7 @@
+html {
+	font-family: 'Open Sans', sans-serif;
+}
+
 .main {
 	display: flex;
 }
@@ -6,5 +10,16 @@
 	width: 100px;
 	background-color: #000;
 }
+
+.map-container {
+	width: 100%;
+}
+
+.map-sidebar {
+	width: 25%;
+	background-color: #385074;
+}
+
+/*# sourceMappingURL=main.css.map */
 
 /*# sourceMappingURL=main.css.map */
