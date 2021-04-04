@@ -1,5 +1,6 @@
 html {
   font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
 }
 
 .header {
@@ -21,5 +22,16 @@ html {
 
 .map-sidebar {
   width: 25%;
+  padding: 25px 15px;
+  color: #fff;
   background-color: #385074;
+  &__title {
+    font-size: 26px;
+    font-weight: 600;
+  }
+  &__part {
+    &_preview {
+      display: none;
+    }
+  }
 }

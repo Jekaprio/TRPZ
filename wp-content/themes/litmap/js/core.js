@@ -16,9 +16,12 @@ var gmapRegions = {
 
 var map = {
     classes: {
-        sidebarPart: 'map-sidebar__part',
-        sidebarPartDefault: 'map-sidebar_view-default',
-        sidebarPartPreview: 'map-sidebar_view-preview',
+        sidebarPartDefault: 'js-sidebar-part-default',
+        sidebarPartPreview: 'js-sidebar-part-preview',
+        previewTitle: 'js-preview-title',
+        previewImage: 'js-preview-image',
+        previewExcerpt: 'js-preview-excerpt',
+        previewAddress: 'js-preview-address',
     },
     regionIcons: {
         'diyachi': `<?xml version="1.0"?>
@@ -70,13 +73,23 @@ var map = {
     },
     init: function () {
         var self = this;
+
         this.map = $('.js-map');
+
+        this.sidebarPartDefault = $('.js-sidebar-part-default');
+        this.sidebarPartPreview = $('.js-sidebar-part-preview');
+
+        this.previewTitle = $('.js-preview-title');
+        this.previewImage = $('.js-preview-image');
+        this.previewExcerpt = $('.js-preview-excerpt');
+        this.previewAddress = $('.js-preview-address');
+
         this.items = [];
 
         $.ajax({
             url: wp_ajax_data.url,
             data: {
-                'action': 'get_pointers',
+                action: 'get_pointers',
             },
             method: 'POST',
             success: function (response) {
@@ -237,7 +250,7 @@ var map = {
         });
     },
     renderRegionMap: function(region) {
-        var ctrl = this;
+        var self = this;
 
         // Render GeoJson data
         this.gmap.data.addGeoJson(gmapRegions["features"][region]);
@@ -256,7 +269,7 @@ var map = {
         this.gmap.fitBounds(bounds);
 
         var listener = google.maps.event.addListener( this.gmap, "idle", function() {
-            ctrl.gmap.setZoom(8);
+            self.gmap.setZoom(8);
             google.maps.event.removeListener(listener);
         });
 
@@ -295,28 +308,31 @@ var map = {
 
                 google.maps.event.addListener(marker,'mouseover',function() {
                     var category = this.category;
-                    var template = ctrl.regionIcons[category];
+                    var template = self.regionIcons[category];
                     // Set hover color on marker template
-                    var svg = template.replace(/{{ color }}/g, ctrl.markerColors['hover']);
+                    var svg = template.replace(/{{ color }}/g, self.markerColors['hover']);
                     // Generate marker icon in svg from template
                     var icon = {
                         url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
                         scaledSize: new google.maps.Size(63, 74)
                     };
                     this.setIcon(icon);
+                    self.openPreview(this.id);
                 });
 
                 google.maps.event.addListener(marker,'mouseout',function() {
                     var category = this.category;
-                    var template = ctrl.regionIcons[category];
+                    var template = self.regionIcons[category];
                     // Set stage color on marker template
-                    var svg = template.replace(/{{ color }}/g, ctrl.markerColors[category]);
+                    var svg = template.replace(/{{ color }}/g, self.markerColors[category]);
                     // Generate marker icon in svg from template
                     var icon = {
                         url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
                         scaledSize: new google.maps.Size(63, 74)
                     };
                     this.setIcon(icon);
+                    self.sidebarPartPreview.hide();
+                    self.sidebarPartDefault.show();
                 });
 
                 google.maps.event.addListener(marker,'spider_click',function(){
@@ -340,6 +356,41 @@ var map = {
                 map.gmap.setZoom(minClusterZoom+1);
         });*/
 
+    },
+    /*loadPreview(id) {
+        var self = this;
+        $.ajax({
+            url: wp_ajax_data.url,
+            data: {
+                action: 'get_preview',
+                id: id
+            },
+            method: 'POST',
+            success: function (response) {
+                if (response.success) {
+                    self.previewTitle.html(response.data.title)
+                    self.previewImage.attr('src', response.data.image_url);
+                    self.previewExcerpt.html(response.data.excerpt)
+                    self.previewAddress.html(response.data.address)
+                    self.sidebarPartDefault.hide();
+                    self.sidebarPartPreview.show();
+                }
+            },
+            error: function (response) {
+            }
+        });
+    },*/
+    openPreview(id) {
+        var item = this.items.find(function(item) {
+            return item.id === id;
+        })
+
+        this.previewTitle.html(item.preview.title)
+        this.previewImage.attr('src', item.preview.image_url);
+        this.previewExcerpt.html(item.preview.excerpt)
+        this.previewAddress.html(item.preview.address)
+        this.sidebarPartDefault.hide();
+        this.sidebarPartPreview.show();
     },
     filterMarkers: function(category) {
         for (var i = 0; i < this.regionMarkers.length; i++) {

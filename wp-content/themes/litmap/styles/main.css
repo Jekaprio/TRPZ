@@ -1,5 +1,6 @@
 html {
 	font-family: 'Open Sans', sans-serif;
+	font-size: 14px;
 }
 
 .main {
@@ -17,7 +18,18 @@ html {
 
 .map-sidebar {
 	width: 25%;
+	padding: 25px 15px;
+	color: #fff;
 	background-color: #385074;
+}
+
+.map-sidebar__title {
+	font-size: 26px;
+	font-weight: 600;
+}
+
+.map-sidebar__part_preview {
+	display: none;
 }
 
 /*# sourceMappingURL=main.css.map */

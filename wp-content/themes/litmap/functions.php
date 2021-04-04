@@ -262,6 +262,12 @@ function cache_items( $post_id ) {
 				'coordinates' => [
 					'lat' => $meta['pointer']['lat'],
 					'lng' => $meta['pointer']['lng'],
+				],
+				'preview' => [
+					'title' => $item->post_title,
+					'image_url' => get_the_post_thumbnail_url($item->ID),
+					'excerpt' => get_the_excerpt($item->ID),
+					'address' => $meta['pointer']['address']
 				]
 			];
 		}
@@ -282,3 +288,27 @@ function get_pointers() {
 }
 add_action( 'wp_ajax_get_pointers', 'get_pointers' );
 add_action( 'wp_ajax_nopriv_get_pointers', 'get_pointers' );
+
+/*function get_preview() {
+	if (empty($_POST['id'])) {
+		wp_send_json_error();
+	}
+
+	$id = $_POST['id'];
+	$post_data = get_post($id);
+
+	if ($post_data) {
+		$pointer = get_field('pointer', $id);
+
+		wp_send_json_success([
+			'title' => $post_data->post_title,
+			'image_url' => get_the_post_thumbnail_url($id),
+			'excerpt' => get_the_excerpt($id),
+			'address' => $pointer['address']
+		]);
+	}
+
+	wp_send_json_error();
+}
+add_action( 'wp_ajax_get_preview', 'get_preview' );
+add_action( 'wp_ajax_nopriv_get_preview', 'get_preview' );*/
