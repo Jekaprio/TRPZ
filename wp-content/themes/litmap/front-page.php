@@ -46,7 +46,16 @@ get_header();
     </section>
 
     <section class="map-container">
-        <section class="search"></section>
+        <section class="search">
+            <input type="text" class="search__input js-search-value" placeholder="Що ви шукаєте?">
+            <button class="search__reset js-search-reset">
+                <i class="fa fa-times"></i>
+            </button>
+            <button class="search__submit js-search-submit">
+                <i class="fa fa-search"></i>
+            </button>
+            <div class="search__results js-search-results" data-label-no-results="Нічого не знайдено :("></div>
+        </section>
         <section class="map-container">
             <div class="map js-map">
                 <div class="map__frame" id="map-frame"></div>

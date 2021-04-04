@@ -141,6 +141,7 @@ add_action( 'widgets_init', 'litmap_widgets_init' );
  */
 function litmap_scripts() {
 	wp_enqueue_style( 'wpb-google-fonts', 'https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600&display=swap', false );
+	wp_enqueue_style( 'font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css', false );
 	wp_enqueue_style( 'litmap-style', get_stylesheet_uri(), array(), filemtime( get_stylesheet_directory() . '/style.css' ) );
 	wp_enqueue_style( 'main-style', get_template_directory_uri().'/styles/main.css', array(), filemtime( get_stylesheet_directory() . '/styles/main.css' ));
 
@@ -246,7 +247,8 @@ function cache_items( $post_id ) {
 	$cached_items = [];
 
 	$items = get_posts([
-		'post_type' => 'item'
+		'post_type' => 'item',
+		'numberposts' => -1
 	]);
 
 	error_log(print_r($items, 1));
@@ -325,3 +327,31 @@ function get_item() {
 }
 add_action( 'wp_ajax_get_item', 'get_item' );
 add_action( 'wp_ajax_nopriv_get_item', 'get_item' );
+
+function search_items() {
+	if (empty($_POST['value'])) {
+		wp_send_json_error();
+	}
+
+	$value = $_POST['value'];
+
+	$posts = get_posts([
+		'post_type' => 'item',
+		'numberposts' => -1,
+		's' => esc_attr($value),
+		'orderby' => 'title',
+		'order' => 'ASC',
+	]);
+
+	$items = [];
+	foreach ($posts as $post) {
+		$items[] = [
+			'id' => $post->ID,
+			'title' => $post->post_title
+		];
+	}
+
+	wp_send_json_success(['items' => $items]);
+}
+add_action( 'wp_ajax_search_items', 'search_items' );
+add_action( 'wp_ajax_nopriv_search_items', 'search_items' );

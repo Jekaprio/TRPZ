@@ -89,6 +89,10 @@ var map = {
         this.popupImage = $('.js-item-popup-image');
         this.popupDescription = $('.js-item-popup-description');
 
+        this.searchField = $('.js-search-value');
+        this.searchResults = $('.js-search-results');
+        this.buttonSearchReset = $('.js-search-reset');
+
         this.filters = $('[data-filter]');
 
         this.items = [];
@@ -121,14 +125,45 @@ var map = {
     },
     events: function() {
         var self = this;
+
         $('.js-item-popup-close').click(function (){
             self.popup.fadeOut(300);
         });
+
         this.filters.click(function () {
            var category = $(this).data('filter');
            $('.js-filter-checkmark').hide();
            $(this).find('.js-filter-checkmark').show();
            self.filterMarkers(category);
+        });
+
+        $('.js-search-submit').click(function() {
+            self.search(self.searchField.val());
+        });
+
+        self.searchField.keypress(function(event) {
+            var keycode = event.keyCode || event.which;
+            if (keycode == '13') {
+                self.search(self.searchField.val());
+            }
+        })
+
+        self.searchField.on('input', function(event) {
+            if (self.searchField.val().length > 0) {
+                self.buttonSearchReset.show();
+            } else {
+                self.buttonSearchReset.hide();
+            }
+        })
+
+        this.buttonSearchReset.click(function () {
+            self.searchField.val('');
+            self.searchResults.html('').hide();
+            self.buttonSearchReset.hide();
+        });
+
+        $(document).on('click', '[data-open-item]', function() {
+           self.openItem($(this).attr('data-open-item'));
         });
     },
     initRegionMap: function () {
@@ -440,8 +475,42 @@ var map = {
             this.markerCluster.repaint();
         }
     },
+    search: function(value) {
+        var self = this;
+        this.searchResults.html('');
+        $.ajax({
+            url: wp_ajax_data.url,
+            data: {
+                action: 'search_items',
+                value: value
+            },
+            method: 'POST',
+            success: function (response) {
+                if (response.success) {
+                    if (response.data.items.length > 0) {
+                        response.data.items.forEach(function(item) {
+                            self.searchResults.append('<div class="search-result-item" data-open-item="' + item.id + '">' + item.title + '</div>');
+                        });
+                    } else {
+                        self.searchResults.append('<div class="search-result-item ">' + self.searchResults.data('label-no-results') + '</div>');
+                    }
+                    self.searchResults.show();
+                }
+            },
+            error: function (response) {
+            }
+    });
+    }
 };
 
 $(function() {
+    var ajaxLoader = $(".js-ajax-loader");
+    $(document).ajaxStart(function(){
+        ajaxLoader.show();
+    });
+    $(document).ajaxComplete(function(){
+        ajaxLoader.hide();
+    });
+
     map.init();
 });

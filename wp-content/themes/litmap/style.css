@@ -541,7 +541,7 @@ a:active {
 
 /* Forms
 --------------------------------------------- */
-button,
+/*button,
 input[type="button"],
 input[type="reset"],
 input[type="submit"] {
@@ -611,7 +611,7 @@ input[type="datetime-local"]:focus,
 input[type="color"]:focus,
 textarea:focus {
 	color: #111;
-}
+}*/
 
 select {
 	border: 1px solid #ccc;
