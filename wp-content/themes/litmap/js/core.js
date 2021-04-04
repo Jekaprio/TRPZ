@@ -84,7 +84,14 @@ var map = {
         this.previewExcerpt = $('.js-preview-excerpt');
         this.previewAddress = $('.js-preview-address');
 
+        this.popup = $('.js-item-popup');
+        this.popupTitle = $('.js-item-popup-title');
+        this.popupImage = $('.js-item-popup-image');
+        this.popupDescription = $('.js-item-popup-description');
+
         this.items = [];
+
+        this.events();
 
         $.ajax({
             url: wp_ajax_data.url,
@@ -113,6 +120,10 @@ var map = {
         this.events();
     },
     events: function() {
+        var self = this;
+        $('.js-item-popup-close').click(function (){
+            self.popup.fadeOut(300);
+        });
     },
     initRegionMap: function () {
         var mapOptions = {
@@ -335,8 +346,8 @@ var map = {
                     self.sidebarPartDefault.show();
                 });
 
-                google.maps.event.addListener(marker,'spider_click',function(){
-                    console.log(this.id);
+                google.maps.event.addListener(marker,'spider_click',function() {
+                    self.openItem(this.id);
                 });
 
                 map.oms.addMarker(marker);
@@ -391,6 +402,27 @@ var map = {
         this.previewAddress.html(item.preview.address)
         this.sidebarPartDefault.hide();
         this.sidebarPartPreview.show();
+    },
+    openItem(id) {
+        var self = this;
+        $.ajax({
+            url: wp_ajax_data.url,
+            data: {
+                action: 'get_item',
+                id: id
+            },
+            method: 'POST',
+            success: function (response) {
+                if (response.success) {
+                    self.popupTitle.html(response.data.popup_title).css('background-color', response.data.category_color);
+                    self.popupImage.attr('src', response.data.image_url);
+                    self.popupDescription.html(response.data.description)
+                    self.popup.fadeIn(300);
+                }
+            },
+            error: function (response) {
+            }
+        });
     },
     filterMarkers: function(category) {
         for (var i = 0; i < this.regionMarkers.length; i++) {

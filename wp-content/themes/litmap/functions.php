@@ -289,7 +289,7 @@ function get_pointers() {
 add_action( 'wp_ajax_get_pointers', 'get_pointers' );
 add_action( 'wp_ajax_nopriv_get_pointers', 'get_pointers' );
 
-/*function get_preview() {
+function get_item() {
 	if (empty($_POST['id'])) {
 		wp_send_json_error();
 	}
@@ -298,17 +298,30 @@ add_action( 'wp_ajax_nopriv_get_pointers', 'get_pointers' );
 	$post_data = get_post($id);
 
 	if ($post_data) {
-		$pointer = get_field('pointer', $id);
+		$category =  wp_get_post_terms($id, 'item_category')[0];
+		$popup_title = '';
+		$category_color = '';
+
+		if ($category->slug === 'diyachi') {
+			$popup_title = 'Біографія діяча';
+			$category_color = '#ff9d7b';
+		} else if ($category->slug === 'muzeyi') {
+			$popup_title = 'Інформація про музей';
+			$category_color = '#009688';
+		} else if ($category->slug === 'pamyatky') {
+			$popup_title = 'Інформація про пам\'ятку';
+			$category_color = '#a7d5e0';
+		}
 
 		wp_send_json_success([
-			'title' => $post_data->post_title,
+			'popup_title' => $popup_title,
+			'category_color' => $category_color,
 			'image_url' => get_the_post_thumbnail_url($id),
-			'excerpt' => get_the_excerpt($id),
-			'address' => $pointer['address']
+			'description' => '<h1>' . $post_data->post_title . '</h1><br>' . $post_data->post_content
 		]);
 	}
 
 	wp_send_json_error();
 }
-add_action( 'wp_ajax_get_preview', 'get_preview' );
-add_action( 'wp_ajax_nopriv_get_preview', 'get_preview' );*/
+add_action( 'wp_ajax_get_item', 'get_item' );
+add_action( 'wp_ajax_nopriv_get_item', 'get_item' );
