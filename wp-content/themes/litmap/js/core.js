@@ -235,10 +235,7 @@ var map = {
                     ]
                 }
             ],
-            fullscreenControl: true,
-            fullscreenControlOptions: {
-                position: google.maps.ControlPosition.TOP_LEFT
-            },
+            streetViewControl: false
         };
 
         var mapElement = document.getElementById('map-frame');
