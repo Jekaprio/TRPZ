@@ -26,8 +26,46 @@ html {
 }
 
 .filters {
+	display: flex;
+	align-items: center;
 	width: 100px;
 	background-color: #000;
+}
+
+.filters__list {
+	width: 100%;
+}
+
+.filter-item {
+	position: relative;
+	padding: 10px 0;
+	color: #fff;
+	text-align: center;
+	cursor: pointer;
+	transition: background-color 0.3s;
+}
+
+.filter-item:hover {
+	background-color: #ffe206 !important;
+}
+
+.filter-item__icon {
+	width: 60%;
+	fill: currentColor;
+}
+
+.filter-item__title {
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.filter-item__checkmark {
+	display: none;
+	position: absolute;
+	top: 2px;
+	right: 4px;
+	fill: currentColor;
+	width: 12px;
 }
 
 .map-container {

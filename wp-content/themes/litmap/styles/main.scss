@@ -25,8 +25,41 @@ html {
 }
 
 .filters {
+  display: flex;
+  align-items: center;
   width: 100px;
   background-color: #000;
+  &__list {
+    width: 100%;
+  }
+}
+
+.filter-item {
+  position: relative;
+  padding: 10px 0;
+  color: #fff;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  &:hover {
+    background-color: #ffe206 !important;
+  }
+  &__icon {
+    width: 60%;
+    fill: currentColor;
+  }
+  &__title {
+    font-size: 14px;
+    font-weight: 600;
+  }
+  &__checkmark {
+    display: none;
+    position: absolute;
+    top: 2px;
+    right: 4px;
+    fill: currentColor;
+    width: 12px;
+  }
 }
 
 .map-container {

@@ -89,9 +89,9 @@ var map = {
         this.popupImage = $('.js-item-popup-image');
         this.popupDescription = $('.js-item-popup-description');
 
-        this.items = [];
+        this.filters = $('[data-filter]');
 
-        this.events();
+        this.items = [];
 
         $.ajax({
             url: wp_ajax_data.url,
@@ -123,6 +123,12 @@ var map = {
         var self = this;
         $('.js-item-popup-close').click(function (){
             self.popup.fadeOut(300);
+        });
+        this.filters.click(function () {
+           var category = $(this).data('filter');
+           $('.js-filter-checkmark').hide();
+           $(this).find('.js-filter-checkmark').show();
+           self.filterMarkers(category);
         });
     },
     initRegionMap: function () {
@@ -235,7 +241,8 @@ var map = {
                     ]
                 }
             ],
-            streetViewControl: false
+            streetViewControl: false,
+            fullscreenControl: false
         };
 
         var mapElement = document.getElementById('map-frame');
@@ -358,6 +365,7 @@ var map = {
 
         var minClusterZoom = 12;
         this.markerCluster.setMaxZoom(minClusterZoom);
+        this.markerCluster.setIgnoreHidden(true);
         /*google.maps.event.addListener(this.markerCluster, 'clusterclick', function(cluster) {
             map.gmap.fitBounds(cluster.getBounds()); // Fit the bounds of the cluster clicked on
             if( map.gmap.getZoom() > minClusterZoom+1 )
@@ -429,11 +437,9 @@ var map = {
             } else {
                 marker.setVisible(false);
             }
+            this.markerCluster.repaint();
         }
     },
-    resetMarkersFilter: function() {
-
-    }
 };
 
 $(function() {
