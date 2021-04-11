@@ -366,3 +366,8 @@ function title_filter( $where, &$wp_query ){
 	}
 	return $where;
 }
+
+function add_favicon(){ ?>
+	<link rel="shortcut icon" href="<?php echo get_stylesheet_directory_uri();?>/images/favicon.ico"/>
+<?php }
+add_action('wp_head','add_favicon');
