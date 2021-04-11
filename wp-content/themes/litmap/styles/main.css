@@ -1,18 +1,22 @@
 html {
-	font-family: 'Open Sans', sans-serif;
-	font-size: 14px;
+	font-family: 'Playfair Display', serif;
+	font-size: 15px;
 }
 
 .header {
 	width: 100%;
 	height: 90px;
 	padding: 10px;
-	background-color: #000;
+	background-color: #383737;
 	color: #fff;
 	text-align: center;
 }
 
 .header a {
+	-webkit-text-fill-color: transparent;
+	background: -webkit-linear-gradient(#ecfcf4, #0eceb4);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
 	color: inherit;
 	text-decoration: none;
 	text-transform: uppercase;
@@ -28,8 +32,9 @@ html {
 .filters {
 	display: flex;
 	align-items: center;
-	width: 100px;
-	background-color: #000;
+	width: 80px;
+	flex: 1 0 auto;
+	background-color: #383737;
 }
 
 .filters__list {
@@ -157,6 +162,7 @@ html {
 
 .map-sidebar {
 	width: 25%;
+	flex: 1 0 auto;
 	height: 100%;
 	padding: 25px 15px;
 	color: #fff;
@@ -224,6 +230,7 @@ html {
 .item-popup__image {
 	margin-left: auto;
 	max-width: 25%;
+	align-self: flex-start;
 }
 
 @keyframes bounce {

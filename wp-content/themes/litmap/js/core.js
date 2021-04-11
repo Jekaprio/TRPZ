@@ -149,6 +149,7 @@ var map = {
         })
 
         self.searchField.on('input', function(event) {
+            self.searchResults.html('').hide();
             if (self.searchField.val().length > 0) {
                 self.buttonSearchReset.show();
             } else {

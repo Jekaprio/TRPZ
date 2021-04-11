@@ -32,7 +32,8 @@ html {
 .filters {
   display: flex;
   align-items: center;
-  width: 100px;
+  width: 80px;
+  flex: 1 0 auto;
   background-color: rgb(56, 55, 55);
 
   &__list {
@@ -150,6 +151,7 @@ html {
 
 .map-sidebar {
   width: 25%;
+  flex: 1 0 auto;
   height: 100%;
   padding: 25px 15px;
   color: #fff;
@@ -216,6 +218,7 @@ html {
   &__image {
     margin-left: auto;
     max-width: 25%;
+    align-self: flex-start;
   }
 }
 
