@@ -335,16 +335,19 @@ function search_items() {
 
 	$value = $_POST['value'];
 
-	$posts = get_posts([
+	$args = [
 		'post_type' => 'item',
-		'numberposts' => -1,
-		's' => esc_attr($value),
+		'posts_per_page' => -1,
+		'search_name' => $value,
 		'orderby' => 'title',
 		'order' => 'ASC',
-	]);
+	];
+	add_filter( 'posts_where', 'title_filter', 10, 2 );
+	$posts = new WP_Query($args);
+	remove_filter( 'posts_where', 'title_filter', 10, 2 );
 
 	$items = [];
-	foreach ($posts as $post) {
+	foreach ($posts->posts as $post) {
 		$items[] = [
 			'id' => $post->ID,
 			'title' => $post->post_title
@@ -355,3 +358,11 @@ function search_items() {
 }
 add_action( 'wp_ajax_search_items', 'search_items' );
 add_action( 'wp_ajax_nopriv_search_items', 'search_items' );
+
+function title_filter( $where, &$wp_query ){
+	global $wpdb;
+	if ( $search_term = $wp_query->get( 'search_name' ) ) {
+		$where .= ' AND ' . $wpdb->posts . '.post_title LIKE \'%' . esc_sql( $wpdb->esc_like( $search_term ) ) . '%\'';
+	}
+	return $where;
+}
